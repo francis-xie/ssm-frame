@@ -1,0 +1,51 @@
+Shiro：https://how2j.cn/k/shiro/shiro-plan/1732.html
+Shiro 是当下常见的安全框架，主要用于用户验证和授权操作。
+1. 基于ini配置文件的 shiro 入门；（使用ini 配置文件进行了相关权限数据的配置）
+1.1.新建doc\shiro\shiro.ini;这里面定义了和安全相关的数据： 用户，角色和权限;
+1.2.准备用户类，用于存放账号密码：com.emis.vi.ssm.pojo.User
+1.3.测试用例：com.emis.vi.ssm.test.shiro.ini.TestShiro;(描述见：2.测试.txt)
+
+2. shiro jdbc方式使用数据库；（把权限相关的内容放在数据库里）
+2.1.RBAC 概念：RBAC 是当下权限系统的设计基础，同时有两种解释：
+    一： Role-Based Access Control，基于角色的访问控制
+    即，你要能够删除产品，那么当前用户就必须拥有产品经理这个角色
+    二：Resource-Based Access Control，基于资源的访问控制
+    即，你要能够删除产品，那么当前用户就必须拥有删除产品这样的权限
+2.2.表结构：基于 RBAC 概念， 就会存在3 张基础表： 用户，角色，权限，
+    以及 2 张中间表来建立 用户与角色的多对多关系，角色与权限的多对多关系。
+    用户与权限之间也是多对多关系，但是是通过 角色间接建立的。
+    表结构见：doc\shiro\sql\2020080601_[]_CRE(shiro).sql
+    注： 补充多对多概念： 用户和角色是多对多，即表示：
+    一个用户可以有多种角色，一个角色也可以赋予多个用户。
+    一个角色可以包含多种权限，一种权限也可以赋予多个角色。
+2.3.表数据见：doc\shiro\sql\2020080602_[]_INS(shiro).sql
+（这里基于 Shiro入门中的shiro.ini 文件，插入一样的用户，角色和权限数据。）
+2.4.准备用户类，用于存放账号密码：com.emis.vi.ssm.pojo.User
+2.5.测试用例：com.emis.vi.ssm.test.shiro.jdbc.DAO;
+（这个DAO提供了和权限相关查询。 但是，并没有提供权限数据本身的维护。 ）
+2.6.Realm 概念：当应用程序向 Shiro 提供了 账号和密码之后， Shiro 就会问 Realm 这个账号密码是否对，
+如果对的话，其所对应的用户拥有哪些角色，哪些权限。Realm 得到了 Shiro 给的用户和密码后，有可能去找 ini 文件，
+就像Shiro 入门中的 shiro.ini，也可以去找数据库，就如同本知识点中的 DAO 查询信息。
+Realm 就是干这个用的，它才是真正进行用户认证和授权的关键地方。
+2.7.DatabaseRealm：DatabaseRealm 就是用来通过数据库 验证用户，和相关授权的类。
+两个方法分别做验证和授权：doGetAuthenticationInfo(), doGetAuthorizationInfo()
+注： DatabaseRealm 这个类，用户提供，但是不由用户自己调用，而是由 Shiro 去调用。就像Servlet的doPost方法，是被Tomcat调用一样。
+
+3. 搞到数据库里，那么就存在密码问题了
+shiro 如何进行加密
+
+4. shiro的独立程序的做法就是上面3种，而现在应用都是基于web的，所以要来个基于web的做法，用的是Servlet
+在web中使用shiro
+
+5. 可是现在开发web用的又都是ssm一套，所以把上面的改造成ssm的
+ssm 中整合 shiro
+
+6. 上面的做法是基于注解的，虽然能用，但是修改后要重启才生效，不灵活。 而实际工作大都是基于url灵活配置的，所以要做成基于url配置的。 可是做成url配置的前提是要用户，角色，权限，以及彼此之间的多对多关系能够设置和管理。因为权限一套维护工作本身就相当复杂了， 所以本知识点先不讲如何url配置，而是把权限一套维护工作做了，为了下一个知识点做铺垫， 这样学习起来更平滑一些。
+使用ssm 维护 shiro 一套权限维护
+
+7. 接着再是基于url 配置权限的教程，基于上面一个知识点，这里做起来的改动就没有那么大了，更加容易掌握。
+基于url配置权限
+
+8. 上面3种做法都是基于ssm的， 眼下springboot也很流行，本知识点就把ssm的做法改造成了springboot的做法了。
+springboot 整合 shiro
+

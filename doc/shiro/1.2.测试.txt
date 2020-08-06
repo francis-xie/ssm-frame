@@ -1,0 +1,12 @@
+1. 基于ini配置文件的 shiro 入门
+准备3个用户，前两个能在 shiro.ini 中找到，第3个不存在
+然后测试登录
+接着测试是否包含角色
+最后测试是否拥有权限
+
+注：Subject 在 Shiro 这个安全框架下， Subject 就是当前用户
+测试用例：com.emis.vi.ssm.test.shiro.TestShiro
+运行 TestShiro，观察效果
+某个用户是否登陆成功
+某个用户是否拥有某个角色
+某个用户是否拥有某种权限
