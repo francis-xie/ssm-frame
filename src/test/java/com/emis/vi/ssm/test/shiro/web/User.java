@@ -1,14 +1,10 @@
-package com.emis.vi.ssm.pojo;
+package com.emis.vi.ssm.test.shiro.web;
 
-/**
- * 用户类，用于存放账号密码
- */
 public class User {
 
-  private int id; //主键id
-  private String name; //用户名
-  private String password; //密码
-  private String salt; //加密用盐
+  private int id;
+  private String name;
+  private String password;
 
   public String getName() {
     return name;
@@ -34,11 +30,4 @@ public class User {
     this.id = id;
   }
 
-  public String getSalt() {
-    return salt;
-  }
-
-  public void setSalt(String salt) {
-    this.salt = salt;
-  }
 }

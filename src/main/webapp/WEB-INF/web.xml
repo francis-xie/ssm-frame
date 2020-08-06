@@ -9,7 +9,10 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
+      <!--用于链接数据库-->
       classpath:applicationContext.xml,
+      <!--加载shiro配置文件，并获取工厂、获取安全管理者实例、将安全管理者放入全局对象-->
+      <!--用于配置shiro-->
       classpath:applicationContext-shiro.xml
     </param-value>
   </context-param>
@@ -21,7 +24,7 @@
   <servlet>
     <servlet-name>mvc-dispatcher</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <!-- spring mvc的配置文件 -->
+    <!-- 指定spring mvc的配置文件 -->
     <init-param>
       <param-name>contextConfigLocation</param-name>
       <param-value>classpath:springMVC.xml</param-value>
@@ -34,6 +37,7 @@
   </servlet-mapping>
 
   <!-- Shiro配置，一旦完成配置，Shiro Filter 就会过滤每个请求并且确保在请求期间特定请求的 Subject 是可访问的。 -->
+  <!--使用shiro过滤器-->
   <filter>
     <filter-name>shiroFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>

@@ -11,9 +11,9 @@ Shiro 是当下常见的安全框架，主要用于用户验证和授权操作�
     即，你要能够删除产品，那么当前用户就必须拥有产品经理这个角色
     二：Resource-Based Access Control，基于资源的访问控制
     即，你要能够删除产品，那么当前用户就必须拥有删除产品这样的权限
-2.2.表结构：基于 RBAC 概念， 就会存在3 张基础表： 用户，角色，权限，
+2.2.表结构：基于 RBAC 概念， 就会存在3 张基础表： 用户(user)，角色(role)，权限(permission)，
     以及 2 张中间表来建立 用户与角色的多对多关系，角色与权限的多对多关系。
-    用户与权限之间也是多对多关系，但是是通过 角色间接建立的。
+    用户与权限之间也是多对多关系，但是是通过 角色间接建立的。(用户角色:user_role、角色权限:role_permission)
     表结构见：doc\shiro\sql\2020080601_[]_CRE(shiro).sql
     注： 补充多对多概念： 用户和角色是多对多，即表示：
     一个用户可以有多种角色，一个角色也可以赋予多个用户。
@@ -27,24 +27,170 @@ Shiro 是当下常见的安全框架，主要用于用户验证和授权操作�
 如果对的话，其所对应的用户拥有哪些角色，哪些权限。Realm 得到了 Shiro 给的用户和密码后，有可能去找 ini 文件，
 就像Shiro 入门中的 shiro.ini，也可以去找数据库，就如同本知识点中的 DAO 查询信息。
 Realm 就是干这个用的，它才是真正进行用户认证和授权的关键地方。
-2.7.DatabaseRealm：DatabaseRealm 就是用来通过数据库 验证用户，和相关授权的类。
+2.7.DatabaseRealm：com.emis.vi.ssm.realm.DatabaseRealm 就是用来通过数据库 验证用户，和相关授权的类。
 两个方法分别做验证和授权：doGetAuthenticationInfo(), doGetAuthorizationInfo()
 注： DatabaseRealm 这个类，用户提供，但是不由用户自己调用，而是由 Shiro 去调用。就像Servlet的doPost方法，是被Tomcat调用一样。
+2.8.修改 shiro.ini：前面准备了DatabaseRealm，那么在配置文件里，就指定当前的realm是它。默认情况下是找IniRealm。
+2.9.测试用例：com.emis.vi.ssm.test.shiro.jdbc.TestShiro
+2.10.关于JdbcRealm：Shiro 提供了一个 JdbcRealm，它会默认去寻找 users, roles, permissions 三张表做类似于 DAO 中的查询。
+但是本例没有使用它，因为实际工作通常都会有更复杂的权限需要，以上3张表不够用。
+JdbcRealm 又封装得太严实了，连它执行了 SQL 语句这件事，我都是很久才明白过来，这样不利于初学者消化，
+最后 使用 DAO 更符合开发者的习惯，也觉得一切都在自己掌握中，用起来心里更踏实一些。
+com.emis.vi.ssm.pojo.Role
+com.emis.vi.ssm.pojo.Permission
 
-3. 搞到数据库里，那么就存在密码问题了
-shiro 如何进行加密
+3. 搞到数据库里，那么就存在密码问题了，shiro 如何进行加密
+3.1.md5 加密：在前面的例子里，用户密码是明文的，这样是有巨大风险的，一旦泄露，就不好了。
+所以，通常都会采用非对称加密，什么是非对称呢？就是不可逆的，而 md5 就是这样一个算法.
+如代码所示 123 用 md5 加密后，得到字符串： 202CB962AC59075B964B07152D234B70
+这个字符串，却无法通过计算，反过来得到源密码是 123.
+这个加密后的字符串就存在数据库里了，下次用户再登陆，输入密码 123， 同样用md5 加密后，
+再和这个字符串一比较，就知道密码是否正确了。
+如此这样，既能保证用户密码校验的功能，又能保证不暴露密码。
+测试用例：com.emis.vi.ssm.test.shiro.jdbc.TestEncryption.main
+3.2.盐：如上的方式直接加密、可以用穷举法、通过比较加密后的字符串、这样看上去也就破解了，
+但是 我加上盐，即 源密码+随机数，那么md5值不就不一样了吗？
+这个随机数，就是盐，而这个随机数也会在数据库里保存下来，每个不同的用户，随机数也是不一样的。
+可以用Shiro自带的工具类，做生成盐，两次md5的做法，得到一串机密都很高的密文。
+测试用例：com.emis.vi.ssm.test.shiro.hash.TestEncryption
+3.3.数据库调整：加入对加密的支持。修改user表，加上盐 字段: salt。
+因盐是随机数，得保留下来，如果不知道盐是多少，我们也就没法判断密码是否正确了
+见：doc\shiro\sql\2020080603_[]_ALT(user).sql
+3.4.运行 TestShiro 进行账号密码验证测试。
+注意，测试之前要先释放注释，以执行一次注册用户行为，如果不注册，后面肯定是不能验证通过的，因为数据库里没有嘛。
+3.5.DAO：测试用例：com.emis.vi.ssm.test.shiro.hash.DAO
+3.6.DatabaseRealm：修改com.emis.vi.ssm.realm.DatabaseRealm，
+把用户通过 UsernamePasswordToken 传进来的密码，以及数据库里取出来的 salt 进行加密，
+加密之后再与数据库里的密文进行比较，判断用户是否能够通过验证。
+3.7.TestShiro：测试用例：com.emis.vi.ssm.test.shiro.hash.TestShiro进行账号密码验证测试。
+注意，测试之前要先释放注释，以执行一次注册用户行为，如果不注册，后面肯定是不能验证通过的，因为数据库里没有嘛。
+3.8.另一个做法的DatabaseRealm：DatabaseRealm 中的做法是自己计算加密后的秘文，再自己比较。
+另一个做法是使用Shiro提供的 HashedCredentialsMatcher 帮我们做。同时配合修改shiro.ini。
+在创建 SimpleAuthenticationInfo 的时候，把数据库中取出来的密文以及盐作为参数传递进去。
 
 4. shiro的独立程序的做法就是上面3种，而现在应用都是基于web的，所以要来个基于web的做法，用的是Servlet
 在web中使用shiro
+4.1.在项目看配置shiro所需依赖jar
+4.2.修改web.xml，在里面加个过滤器。这个过滤器的作用，简单的说，就是 Shiro 入门里的TestShiro这部分的工作，悄悄的干了
+4.3.配置User DAO DatabaseRealm
+4.4.LoginServlet 映射路径/login的访问。
+    获取账号和密码，然后组成UsernamePasswordToken 对象，扔给Shiro进行判断。
+    如果判断不报错，即表示成功，客户端跳转到根目录，否则返回login.jsp，并带上错误信息
+    登录成功后还会把subject放在shiro的session对象里，shiro的这个session和httpsession是串通好了的，
+    所以在这里放了，它会自动放在httpsession里，它们之间是同步的。
+4.5.shiro.ini、style.css、index.jsp、login.jsp、listProduct.jsp、deleteOrder.jsp、deleteProduct.jsp、noRoles.jsp、noPerms.jsp
+相关类见：com.emis.vi.ssm.test.shiro.web
 
-5. 可是现在开发web用的又都是ssm一套，所以把上面的改造成ssm的
-ssm 中整合 shiro
+5. 可是现在开发web用的又都是ssm一套，所以把上面的改造成ssm的，ssm 中整合 shiro
+5.1.基于 SSM 的 SHIRO 项目：SSM简单的说，就是springmvc负责web部分，mybatis负责数据库部分。
+基于 ssm 的 shiro 项目，就是Servlet部分，修改为了SpringMVC，数据库部分，修改为了Mybatis，
+然后把shiro集成进去，用这样一个思路来把本项目实现。
+5.2.表结构和表数据
+5.3.在项目看配置shiro所需依赖jar
+5.4.web.xml：web.xml做了如下几件事情
+5.4.1. 指定spring的配置文件有两个
+applicationContext.xml： 用于链接数据库的、applicationContext-shiro.xml： 用于配置shiro的
+5.4.2. 指定springmvc的配置文件：springMVC.xml
+5.4.3. 使用shiro过滤器：<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+5.5.applicationContext.xml
+5.5.1. 配置数据库的相关信息
+5.5.2. 扫描mybatis的mapper什么的，虽然目前还没有提供mapper类
+5.6.applicationContext-shiro.xml
+提供shiro的相关配置，简单的说，就是把shiro.ini里的内容搬到这个xml文件里面来了，只是写法不同
+5.7.springMVC.xml
+5.7.1. springmvc的基本配置
+5.7.2. 增加了对shiro的支持
+这样可以在控制器Controller上，使用像@RequireRole 这样的注解，来表示某个方法必须有相关的角色才能访问
+5.7.3. 指定了异常处理类DefaultExceptionHandler，这样当访问没有权限的资源的时候，就会跳到统一的页面去显示错误信息
+5.8.log4j.properties：日志配置文件，主要用于显示数据库的SQL语句
+5.9.PageController：因为使用 ssm，所以jsp通常都会放在WEB-INF/jsp 下面，
+而这个位置是无法通过浏览器直接访问的，所以就会专门做这么一个类，便于访问这些jsp。
+比如要访问WEB-INF/jsp/index.jsp文件，那么就通过/index 这个路径来访问。
+这个类还有两点需要注意：
+5.9.1. /login 只支持get方式。 post方式是后续用来进行登录行为的，这里的get方式仅仅用于显示登录页面
+5.9.2. 权限注解：
+通过注解： @RequiresRoles("admin") 指明了 访问 deleteProduct 需要角色"admin"
+通过注解：@RequiresPermissions("deleteOrder") 指明了 访问 deleteOrder 需要权限"deleteOrder"
+5.10.index.jsp：index页面；listProduct.jsp：需要登录才能访问的页面
+5.11.deleteProduct.jsp：需要角色才能访问的页面；deleteOrder.jsp：需要权限deleteOrder 才能访问的页面
+5.12.login.jsp：登陆页面；unauthorized.jsp：没有角色，没有权限都会跳转到这个页面来；style.css：样式文件
+5.13.User 一套：一套是指实体类，Mapper,xml文件， Service接口，Service实现类
+需要说明的是UserMapper是得到一个User对象，但是在UserService里又返回的是这个对象的password属性，
+这样做是为了和前面教程里DAO 里的做法保持一致
+com.emis.vi.ssm.pojo.User、com.emis.vi.ssm.mapper.UserMapper、com.emis.vi.ssm.mapper.User.xml
+com.emis.vi.ssm.service、com.emis.vi.ssm.service.impl.UserServiceImpl
+5.14.Role 一套：Role 一套，与User 一套类似的，RoleMapper返回的是Role的集合，而RoleService里返回的就是String 的集合了
+Role.java、RoleMapper.java、Role.xml、RoleService.java、RoleServiceImpl.java
+5.15.Permission 一套：Permission 一套，与User 一套类似的，PermissionMapper返回的是 Permission 的集合，
+而 PermissionService 里返回的就是String 的集合了
+Permission.java、PermissionMapper.java、Permission.xml、PermissionService.java、PermissionServiceImpl.java
+5.16.LoginController：进行登录的控制器，和 LoginServlet 一样，获取账号密码进行验证，
+如果成功了就客户端跳转到index,否则就返回login.jsp页面。需要注意的是，这里用的是 post 方式
+@RequestMapping(value="/login",method=RequestMethod.POST)、区别于PageController里用 get 方式的 login
+5.17.DatabaseRealm：这里才是真正做登录验证和授权的地方
+做法和 数据库支持 教程中的DatabaseRealm 做法一模一样，区别只是在于把DAO 换成了 Service
+而这个 DatabaseRealm 的使用，是声明在 applicationContext-shiro.xml 中的：
+5.18.DefaultExceptionHandler：最后是异常处理，当发生UnauthorizedException 异常的时候，
+就表示访问了无授权的资源，那么就会跳转到unauthorized.jsp，而在unauthorized.jsp 中就会把错误信息通过变量 ex 取出来。
+DefaultExceptionHandler 的使用，是声明在 springMVC.xml 的最后几行：
 
-6. 上面的做法是基于注解的，虽然能用，但是修改后要重启才生效，不灵活。 而实际工作大都是基于url灵活配置的，所以要做成基于url配置的。 可是做成url配置的前提是要用户，角色，权限，以及彼此之间的多对多关系能够设置和管理。因为权限一套维护工作本身就相当复杂了， 所以本知识点先不讲如何url配置，而是把权限一套维护工作做了，为了下一个知识点做铺垫， 这样学习起来更平滑一些。
-使用ssm 维护 shiro 一套权限维护
+6. 上面的做法是基于注解的，虽然能用，但是修改后要重启才生效，不灵活。
+而实际工作大都是基于url灵活配置的，所以要做成基于url配置的。
+可是做成url配置的前提是要用户，角色，权限，以及彼此之间的多对多关系能够设置和管理。
+因为权限一套维护工作本身就相当复杂了， 所以本知识点先不讲如何url配置，而是把权限一套维护工作做了，
+为了下一个知识点做铺垫， 这样学习起来更平滑一些。使用ssm 维护 shiro 一套权限维护
+6.1.表结构调整：对表结构有所调整，主要是增加了一些字段。doc\shiro\sql\2020080606_[SSM]_CRE(shiro).sql
+6.2.新的表数据：增加基本数据。doc\shiro\sql\2020080607_[SSM]_INS(shiro).sql
+6.3.用户管理效果：访问地址：http://127.0.0.1:8080/shiro/config/listUser
+6.4.角色管理效果：访问地址：http://127.0.0.1:8080/shiro/config/listRole
+6.5.权限管理效果：访问地址：http://127.0.0.1:8080/shiro/config/listPermission
+6.6.对 Mybatis 逆向工程配置：
+OverIsMergeablePlugin：解决Mapper.xml生成重复内容问题
+generatorConfig.xml：这个配置文件就是用于指定要逆向工程哪些表的
+MybatisGenerator：运行 MybatisGenerator 以获取自动生成 Pojo、Example 和 Mapper
+为什么要这么做？ Mybatis 本质上就是自己写 sql 语句的一个帮助工具。
+但是自己写 sql 太繁琐了... 还是用逆向工程好，什么sql 都准备好了，能够支撑完成90% 的业务功能。
+6.7.Service层：UserService.java、RoleService.java、PermissionService.java
+UserRoleService.java、RolePermissionService.java
+6.8.Service实现层：UserServiceImpl.java、RoleServiceImpl.java、PermissionServiceImpl.java
+UserRoleServiceImpl.java、RolePermissionServiceImpl.java
+6.9.Controller 层：UserController.java、RoleController.java、PermissionController.java
+6.10.menu.jsp：因为下面的View层 步骤中的jsp要用到这个文件，所以先准备它
+在jsp目录下新增一个 include目录，然后新建menu.jsp文件
+6.11.View层：listUser.jsp、editUser.jsp、listRole.jsp、editRole.jsp、listPermission.jsp、editPermission.jsp
+6.12.style.css：样式做了些调整
+6.13.web.xml：增加了中文过滤器，上一个知识点居然没这个。。。
+6.14.DatabaseRealm：
+6.14.1. roleService.listRoles 改成了 roleService.listRoleNames
+6.14.2. 因为现在有了增加用户功能（相当于注册），那么此时数据库里的密码也是加密状态的了。
+那么校验工作，也使用 shiro 教程里另一个做法的DatabaseRealm 的方式来进行密码校验，而不是上个知识点 ssm 中的那样用明文校验了。
+6.15.applicationContext-shiro.xml：配合上个步骤DatabaseRealm,做了 shiro加密教程中的shiro.ini 中做的事情 设置密码匹配器
+6.16.访问测试：http://127.0.0.1:8080/shiro/config/listUser
+6.17.原业务功能：原业务功能还是访问如下地址进行访问：http://127.0.0.1:8080/shiro/index
+不过此时的权限还是通过注解@@RequiresPermissions 实现，而非动态url. 在下面知识点就会讲解动态url了
 
 7. 接着再是基于url 配置权限的教程，基于上面一个知识点，这里做起来的改动就没有那么大了，更加容易掌握。
 基于url配置权限
+7.1.基于URL配置权限：通过URL配置来灵活设置权限，而不是非要在Controller里通过注解来做了
+7.2.表中数据：在学习上个知识点权限维护一套 的过程中，同学们多半会自己修改表中数据，
+为了能够重现本知识点所演示的效果，请把下面数据再次导入到数据库中，否则因为数据不一致，演示的效果就会有出入，影响学习
+7.3.运行看效果；登录：http://127.0.0.1:8080/shiro/login
+7.4.PageController.java：首先是PageController.java 里原本通过注解方式的@RequiresPermissions和@RequiresRoles 注释掉了
+7.5.PermissionService.java：增加了两个方法 needInterceptor，listPermissionURLs
+7.6.PermissionServiceImpl.java：为两个方法 needInterceptor，listPermissionURLs 增加了实现
+needInterceptor 表示是否要进行拦截，判断依据是如果访问的某个url,在权限系统里存在，就要进行拦截。 如果不存在，就放行了。
+这一种策略，也可以切换成另一个，即，访问的地址如果不存在于权限系统中，就提示没有拦截。
+这两种做法没有对错之分，取决于业务上希望如何制定权限策略。
+listPermissionURLs(User user) 用来获取某个用户所拥有的权限地址集合
+7.7.URLPathMatchingFilter.java：PathMatchingFilter 是shiro 内置过滤器 PathMatchingFilter 继承了这个它。
+基本思路如下：
+7.7.1. 如果没登录就跳转到登录
+7.7.2. 如果当前访问路径没有在权限系统里维护，则允许访问
+7.7.3. 当前用户所拥有的权限如果不包含当前的访问地址，则跳转到/unauthorized，否则就允许访问
+7.8.applicationContext-shiro.xml：首先声明URLPathMatchingFilter 过滤器
+7.9.jsp 们：显示用的jsp做了些文字上的改动index.jsp、deleteOrder.jsp、deleteProduct.jsp、listProduct.jsp
+7.10.测试地址：http://127.0.0.1:8080/shiro/index
+权限配置测试地址：http://127.0.0.1:8080/shiro/config/listUser
 
 8. 上面3种做法都是基于ssm的， 眼下springboot也很流行，本知识点就把ssm的做法改造成了springboot的做法了。
 springboot 整合 shiro

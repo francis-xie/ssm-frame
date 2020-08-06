@@ -1,8 +1,11 @@
 package com.emis.vi.ssm.pojo;
 
+/**
+ * 权限类
+ */
 public class Permission {
-  private int id;
-  private String name;
+  private int id; //主键id
+  private String name; //权限名称
 
   public int getId() {
     return id;

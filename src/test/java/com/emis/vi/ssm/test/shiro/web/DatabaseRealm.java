@@ -1,4 +1,4 @@
-package com.emis.vi.ssm.realm;
+package com.emis.vi.ssm.test.shiro.web;
 
 import java.util.Set;
 
@@ -11,58 +11,25 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.emis.vi.ssm.service.PermissionService;
-import com.emis.vi.ssm.service.RoleService;
-import com.emis.vi.ssm.service.UserService;
-
-/**
- * 用来通过数据库 验证用户，和相关授权的类
- * 这个类，用户提供，但是不由用户自己调用，而是由 Shiro 去调用。就像Servlet的doPost方法，是被Tomcat调用一样。
- * <p>
- * Realm 概念：当应用程序向 Shiro 提供了 账号和密码之后， Shiro 就会问 Realm 这个账号密码是否对，
- * 如果对的话，其所对应的用户拥有哪些角色，哪些权限。Realm 得到了 Shiro 给的用户和密码后，
- * 就会去找数据库，查询信息。
- */
 public class DatabaseRealm extends AuthorizingRealm {
 
-  @Autowired
-  private UserService userService; //用户业务类
-  @Autowired
-  private RoleService roleService; //角色业务类
-  @Autowired
-  private PermissionService permissionService; //权限业务类
-
-  /**
-   * 相关授权
-   *
-   * @param principalCollection
-   * @return
-   */
   @Override
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
     //能进入到这里，表示账号已经通过验证了
     String userName = (String) principalCollection.getPrimaryPrincipal();
-    //通过service获取角色和权限
-    Set<String> permissions = permissionService.listPermissions(userName);
-    Set<String> roles = roleService.listRoles(userName);
+    //通过DAO获取角色和权限
+    Set<String> permissions = new DAO().listPermissions(userName);
+    Set<String> roles = new DAO().listRoles(userName);
 
     //授权对象
     SimpleAuthorizationInfo s = new SimpleAuthorizationInfo();
-    //把通过service获取到的角色和权限放进去
+    //把通过DAO获取到的角色和权限放进去
     s.setStringPermissions(permissions);
     s.setRoles(roles);
     return s;
   }
 
-  /**
-   * 验证用户
-   *
-   * @param token
-   * @return
-   * @throws AuthenticationException
-   */
   @Override
   protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
     //获取账号密码
@@ -70,7 +37,7 @@ public class DatabaseRealm extends AuthorizingRealm {
     String userName = token.getPrincipal().toString();
     String password = new String(t.getPassword());
     //获取数据库中的密码
-    String passwordInDB = userService.getPassword(userName);
+    String passwordInDB = new DAO().getPassword(userName);
 
     //如果为空就是账号不存在，如果不相同就是密码错误，但是都抛出AuthenticationException，而不是抛出具体错误原因，免得给破解者提供帮助信息
     if (null == passwordInDB || !passwordInDB.equals(password))

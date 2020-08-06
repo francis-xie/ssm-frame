@@ -1,8 +1,11 @@
 package com.emis.vi.ssm.pojo;
 
+/**
+ * 角色类
+ */
 public class Role {
-  private int id;
-  private String name;
+  private int id; //主键id
+  private String name; //角色名称
 
   public int getId() {
     return id;
