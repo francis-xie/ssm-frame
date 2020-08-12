@@ -1,0 +1,2 @@
+1.Shiro 入门-测试目录：ini
+2.Shiro 数据库支持-测试目录：jdbc
