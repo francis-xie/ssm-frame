@@ -3,7 +3,7 @@ package com.emis.vi.ssm.test.shiro.ini;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.emis.vi.ssm.pojo.User;
+import com.emis.vi.ssm.test.shiro.pojo.User;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;

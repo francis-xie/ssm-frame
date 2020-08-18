@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.emis.vi.ssm.pojo.User;
+import com.emis.vi.ssm.test.shiro.pojo.User;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
 

@@ -2,7 +2,7 @@ package com.emis.vi.ssm.test.shiro.hash;
 
 import java.util.Set;
 
-import com.emis.vi.ssm.pojo.User;
+import com.emis.vi.ssm.test.shiro.pojo.User;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;

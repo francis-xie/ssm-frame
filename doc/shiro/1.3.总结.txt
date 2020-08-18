@@ -29,3 +29,23 @@ classpath:applicationContext-shiro.xml：用于配置shiro，加载shiro配置�
 二）applicationContext-shiro.xml配置：
 1.配置shiro的过滤器工厂类；主要securityManager
 2.配置url过滤器URLPathMatchingFilter
+
+applicationContext-shiro.xml、URLPathMatchingFilter.java、PageController.java、DatabaseRealm、web.xml、style.css、
+DefaultExceptionHandler
+Pojo,Example,Mapper,MybatisGenerator,generatorConfig.xml,OverIsMergeablePlugin
+Service层：UserRoleService.java、RolePermissionService.java
+Service实现层：UserRoleServiceImpl.java、RolePermissionServiceImpl.java
+一套是指实体类，Mapper,xml文件， Service接口，Service实现类
+User 一套：User.java、UserMapper.java、User.xml、UserService.java、UserServiceImpl.java
+Role 一套：Role.java、RoleMapper.java、Role.xml、RoleService.java、RoleServiceImpl.java
+》RoleMapper返回的是Role的集合，而RoleService里返回的就是String 的集合了
+Permission 一套：Permission.java、PermissionMapper.java、Permission.xml、PermissionService.java、PermissionServiceImpl.java
+》PermissionMapper返回的是 Permission 的集合，而 PermissionService 里返回的就是String 的集合了
+Controller 层：UserController.java、RoleController.java、PermissionController.java、LoginController.java
+View层config：listUser.jsp、editUser.jsp、listRole.jsp、editRole.jsp、listPermission.jsp、editPermission.jsp、menu.jsp
+View层显示：index.jsp、deleteOrder.jsp、deleteProduct.jsp、listProduct.jsp、
+unauthorized.jsp(没有角色，没有权限都会跳转到这个页面来)、login.jsp(登陆页面)
+业务测试地址：http://127.0.0.1:8080/index
+权限配置测试地址，用户管理：http://127.0.0.1:8080/config/listUser
+权限管理：http://127.0.0.1:8080/config/listPermission
+角色管理：http://127.0.0.1:8080/config/listRole
