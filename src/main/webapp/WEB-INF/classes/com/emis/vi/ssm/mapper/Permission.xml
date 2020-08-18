@@ -5,16 +5,16 @@
 
 <mapper namespace="com.emis.vi.ssm.mapper.PermissionMapper">
   <select id="listPermissionsByUserName" parameterType="string" resultType="Permission">
-    select p.id, p.name from user u
-    left join user_role ru
-    on u.id = ru.uid left
-    join role r
-    on r.id = ru.rid
-    left join role_permission rp
-    on r.id = rp.rid
-    left join permission p
-    on p.id = rp.pid
-    where u.name =#{0}
-  </select>
+			select p.id, p.name from user u 
+				left join user_role ru 
+					on u.id = ru.uid left 
+				join role r 
+					on r.id = ru.rid 
+				left join role_permission rp 
+					on r.id = rp.rid 
+				left join permission p 
+					on p.id = rp.pid 
+			where u.name =#{0}
+	    </select>
 </mapper>
 

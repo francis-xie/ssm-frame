@@ -5,6 +5,7 @@
 
 <mapper namespace="com.emis.vi.ssm.mapper.UserMapper">
   <select id="getByName" parameterType="string" resultType="User">
-    select * from user where name = #{0}
-  </select>
+	        select * from user where name = #{0}
+	    </select>
 </mapper>
+

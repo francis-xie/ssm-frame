@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="workingroom">
-  listProduct.jsp ，能进来，就表示已经登录成功了
+  listProduct.jsp，能进来<br>就表示拥有 listProduct 权限
   <br>
   <a href="#" onClick="javascript:history.back()">返回</a>
 </div>

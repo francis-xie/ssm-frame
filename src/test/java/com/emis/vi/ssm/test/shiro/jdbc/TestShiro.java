@@ -12,6 +12,9 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.Factory;
 
+/**
+ * 相关注释可见com.emis.vi.ssm.test.shiro.ini.TestShiro
+ */
 public class TestShiro {
   public static void main(String[] args) {
     //用户们
@@ -28,7 +31,6 @@ public class TestShiro {
     wang5.setPassword("wrongpassword");
 
     List<User> users = new ArrayList<>();
-
     users.add(zhang3);
     users.add(li4);
     users.add(wang5);

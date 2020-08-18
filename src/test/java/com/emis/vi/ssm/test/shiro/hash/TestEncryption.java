@@ -3,6 +3,9 @@ package com.emis.vi.ssm.test.shiro.hash;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
 
+/**
+ * 用Shiro自带的工具类，做生成盐，两次md5的做法
+ */
 public class TestEncryption {
 
   public static void main(String[] args) {

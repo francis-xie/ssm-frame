@@ -5,12 +5,12 @@
 
 <mapper namespace="com.emis.vi.ssm.mapper.RoleMapper">
   <select id="listRolesByUserName" parameterType="string" resultType="Role">
-    select r.id, r.name from user u
-    left join user_role ur
-    on u.id = ur.uid
-    left join Role r
-    on r.id = ur.rid
-    where u.name = #{0}
-  </select>
+			select r.id, r.name from user u 
+				left join user_role ur 
+					on u.id = ur.uid 
+				left join Role r 
+					on r.id = ur.rid 
+			where u.name = #{0}
+	    </select>
 </mapper>
 

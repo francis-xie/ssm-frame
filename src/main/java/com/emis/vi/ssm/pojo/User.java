@@ -1,21 +1,28 @@
 package com.emis.vi.ssm.pojo;
 
-/**
- * 用户类，用于存放账号密码
- */
 public class User {
+  private Long id;
 
-  private int id; //主键id
-  private String name; //用户名
-  private String password; //密码
-  private String salt; //加密用盐
+  private String name;
+
+  private String password;
+
+  private String salt;
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
 
   public String getName() {
     return name;
   }
 
   public void setName(String name) {
-    this.name = name;
+    this.name = name == null ? null : name.trim();
   }
 
   public String getPassword() {
@@ -23,15 +30,7 @@ public class User {
   }
 
   public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
+    this.password = password == null ? null : password.trim();
   }
 
   public String getSalt() {
@@ -39,6 +38,6 @@ public class User {
   }
 
   public void setSalt(String salt) {
-    this.salt = salt;
+    this.salt = salt == null ? null : salt.trim();
   }
 }

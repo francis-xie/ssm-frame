@@ -10,6 +10,11 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+  <!--1. springmvc的基本配置
+      2. 增加了对shiro的支持
+      这样可以在控制器Controller上，使用像@RequireRole 这样的注解，来表示某个方法必须有相关的角色才能访问
+      3. 指定了异常处理类DefaultExceptionHandler，这样当访问没有权限的资源的时候，就会跳到统一的页面去显示错误信息
+  -->
 
   <context:annotation-config/>
 
@@ -45,6 +50,7 @@
   <bean id="exceptionHandlerExceptionResolver"
         class="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver">
   </bean>
+  <!--指定了异常处理类DefaultExceptionHandler，这样当访问没有权限的资源的时候，就会跳到统一的页面去显示错误信息-->
   <bean class="com.emis.vi.ssm.exception.DefaultExceptionHandler"/>
 
 </beans>

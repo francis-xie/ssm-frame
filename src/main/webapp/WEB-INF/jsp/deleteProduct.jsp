@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="workingroom">
-  deleteProduct.jsp，能进来<br>就表示拥有 productManager 角色
+  deleteProduct.jsp，能进来<br>就表示拥有 deleteProduct 权限
   <br>
   <a href="#" onClick="javascript:history.back()">返回</a>
 </div>

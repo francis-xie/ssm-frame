@@ -1,0 +1,31 @@
+2020.08.18 记录
+总结 ：
+* Apache Shiro是一个强大易用的 Java 安全框架，提供了认证、授权、加密和会话管理功能
+* Shiro 为解决下列问题（我喜欢称它们为应用安全的四要素）提供了保护应用的 API：
+* 认证 - 用户身份识别，常被称为用户“登录”；
+* 授权 - 访问控制；
+* 密码加密 - 保护或隐藏数据防止被偷窥；
+* 会话管理 - 每用户相关的时间敏感的状态。
+
+Subject：可以把它认为是 Shiro 的“用户”概念。
+SecurityManager：Subject 的“幕后”推手是 SecurityManager，管理所有用户的安全操作。
+Realms：Realm 充当了 Shiro 与应用安全数据间的“桥梁”或者“连接器”。
+
+* subject.login(token); //shiro登陆
+* subject.hasRole(role); //shiro角色检查
+* subject.isPermitted(permit); //shiro权限检查
+主要表：用户user、角色role、权限permission；可选中间表：用户角色user_role、角色权限role_permission
+
+把登陆验证 和 登陆授权分开描述
+1：applicationContext-shiro.xml进行配置：主要是SecurityManager和Realms加入到spring家庭中管理
+2：LoginController类的login方法中获得Subject当前用户，进行登陆操作subject.login(token);
+3：subject.login(token);调用时会到DatabaseRealm类的doGetAuthenticationInfo方法中进行登陆验证
+
+一）web.xml配置：
+1.加载相关配置文件
+classpath:applicationContext.xml：用于链接数据库
+classpath:applicationContext-shiro.xml：用于配置shiro，加载shiro配置文件，并获取工厂、获取安全管理者实例、将安全管理者放入全局对象
+2.配置使用shiro过滤器DelegatingFilterProxy过滤每个请求
+二）applicationContext-shiro.xml配置：
+1.配置shiro的过滤器工厂类；主要securityManager
+2.配置url过滤器URLPathMatchingFilter

@@ -15,19 +15,19 @@
   <context:annotation-config/>
   <context:component-scan base-package="com.emis.vi.ssm.service"/>
 
+  <!--配置数据库的相关信息-->
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
     <property name="driverClassName">
       <value>com.mysql.jdbc.Driver</value>
     </property>
     <property name="url">
-      <value>jdbc:mysql://localhost:3306/shiro?characterEncoding=UTF-8</value>
-
+      <value>jdbc:mysql://localhost:3307/how2java?characterEncoding=UTF-8</value>
     </property>
     <property name="username">
       <value>root</value>
     </property>
     <property name="password">
-      <value>admin</value>
+      <value>turbo</value>
     </property>
   </bean>
 
@@ -35,10 +35,18 @@
     <property name="typeAliasesPackage" value="com.emis.vi.ssm.pojo"/>
     <property name="dataSource" ref="dataSource"/>
     <property name="mapperLocations" value="classpath:com/emis/vi/ssm/mapper/*.xml"/>
+    <!--<property name="mapperLocations">
+      <array>
+        <value>classpath:com/emis/vi/ssm/mapper/*.xml</value>
+        <value>classpath:com/emis/vi/ssm/mbg/mapper/*.xml</value>
+      </array>
+    </property>-->
   </bean>
 
+  <!--扫描mybatis的mapper-->
   <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
     <property name="basePackage" value="com.emis.vi.ssm.mapper"/>
+    <!--<property name="basePackage" value="com.emis.vi.ssm.mapper,com.emis.vi.ssm.mbg.mapper"/>-->
   </bean>
 
 </beans>

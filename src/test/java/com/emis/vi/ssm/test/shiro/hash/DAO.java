@@ -26,10 +26,17 @@ public class DAO {
   }
 
   public Connection getConnection() throws SQLException {
-    return DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/shiro?characterEncoding=UTF-8", "root",
-     "admin");
+    return DriverManager.getConnection("jdbc:mysql://127.0.0.1:3307/how2java?characterEncoding=UTF-8", "root",
+     "turbo");
   }
 
+  /**
+   * 用于注册，并且在注册的时候，将用户提交的密码加密
+   *
+   * @param name
+   * @param password
+   * @return
+   */
   public String createUser(String name, String password) {
 
     String sql = "insert into user values(null,?,?,?)";
@@ -69,6 +76,12 @@ public class DAO {
     return null;
   }
 
+  /**
+   * 用于取出用户信息，其中不仅仅包括加密后的密码，还包括盐
+   *
+   * @param userName
+   * @return
+   */
   public User getUser(String userName) {
     User user = null;
     String sql = "select * from user where name = ?";
@@ -80,7 +93,7 @@ public class DAO {
 
       if (rs.next()) {
         user = new User();
-        user.setId(rs.getInt("id"));
+        user.setId(rs.getLong("id"));
         user.setName(rs.getString("name"));
         user.setPassword(rs.getString("password"));
         user.setSalt(rs.getString("salt"));
