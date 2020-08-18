@@ -28,6 +28,7 @@
     <property name="filters">
       <util:map>
         <entry key="logout" value-ref="logoutFilter"/>
+        <!--在shiro中使用这个过滤器，过滤规则是所有访问/** = url -->
         <entry key="url" value-ref="urlPathMatchingFilter"/>
       </util:map>
     </property>
@@ -105,6 +106,7 @@
   </bean>
 
   <bean id="databaseRealm" class="com.emis.vi.ssm.realm.DatabaseRealm">
+    <!--让DatabaseRealm使用这个密码匹配器-->
     <property name="credentialsMatcher" ref="credentialsMatcher"/>
   </bean>
 

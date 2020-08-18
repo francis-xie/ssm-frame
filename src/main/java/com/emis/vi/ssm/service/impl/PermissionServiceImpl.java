@@ -94,6 +94,14 @@ public class PermissionServiceImpl implements PermissionService {
     return result;
   }
 
+  /**
+   * 表示是否要进行拦截，判断依据是如果访问的某个url,在权限系统里存在，就要进行拦截。 如果不存在，就放行了。
+   * 这一种策略，也可以切换成另一个，即，访问的地址如果不存在于权限系统中，就提示没有拦截。
+   * 这两种做法没有对错之分，取决于业务上希望如何制定权限策略。
+   *
+   * @param requestURI
+   * @return
+   */
   @Override
   public boolean needInterceptor(String requestURI) {
     List<Permission> ps = list();
@@ -104,6 +112,12 @@ public class PermissionServiceImpl implements PermissionService {
     return false;
   }
 
+  /**
+   * 用来获取某个用户所拥有的权限地址集合
+   *
+   * @param userName
+   * @return
+   */
   @Override
   public Set<String> listPermissionURLs(String userName) {
     Set<String> result = new HashSet<>();

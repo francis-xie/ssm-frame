@@ -23,6 +23,7 @@ import com.emis.vi.ssm.service.UserService;
 /**
  * 用来通过数据库 验证用户，和相关授权的类，这里才是真正做登录验证和授权的地方
  * 这个类，用户提供，但是不由用户自己调用，而是由 Shiro 去调用。就像Servlet的doPost方法，是被Tomcat调用一样。
+ * 而这个 DatabaseRealm 的使用，是声明在 applicationContext-shiro.xml 中的
  * <p>
  * Realm 概念：当应用程序向 Shiro 提供了 账号和密码之后， Shiro 就会问 Realm 这个账号密码是否对，
  * 如果对的话，其所对应的用户拥有哪些角色，哪些权限。Realm 得到了 Shiro 给的用户和密码后，

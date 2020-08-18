@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.emis.vi.ssm.service.PermissionService;
 
 /**
+ * 通过URL配置来灵活设置权限，而不是非要在Controller里通过注解来做了
  * PathMatchingFilter 是shiro 内置过滤器 PathMatchingFilter 继承了这个它。
  * 基本思路如下：
  * 1. 如果没登录就跳转到登录

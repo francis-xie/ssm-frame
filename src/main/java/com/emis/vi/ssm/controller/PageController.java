@@ -26,13 +26,13 @@ public class PageController {
     return "index"; //index页面
   }
 
-  //@RequiresPermissions("deleteOrder")
+  //@RequiresPermissions("deleteOrder") //注释掉了，通过URL配置动态权限
   @RequestMapping("deleteOrder")
   public String deleteOrder() {
     return "deleteOrder"; //需要权限deleteOrder 才能访问的页面
   }
 
-  //@RequiresRoles("productManager")
+  //@RequiresRoles("productManager") //注释掉了，通过URL配置动态权限
   @RequestMapping("deleteProduct")
   public String deleteProduct() {
     return "deleteProduct"; //需要角色才能访问的页面
