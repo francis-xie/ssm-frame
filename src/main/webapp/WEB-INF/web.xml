@@ -3,54 +3,45 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
-  <display-name>Archetype Created Web Application</display-name>
+  <display-name>ssm</display-name>
+
+  <!-- spring的配置文件，Context ConfigLocation-->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <!--用于链接数据库-->
+    <!--用于配置shiro，加载shiro配置文件，并获取工厂、获取安全管理者实例、将安全管理者放入全局对象-->
+    <param-value>classpath*:/spring-context*.xml</param-value>
+  </context-param>
+  <!--<listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>-->
+  <listener>
+    <listener-class>com.emis.vi.ssm.modules.sys.listener.WebContextListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+  </listener>
 
   <!-- 中文过滤器 -->
   <filter>
-    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-name>encodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
     <init-param>
       <param-name>encoding</param-name>
-      <param-value>utf-8</param-value>
+      <param-value>UTF-8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceEncoding</param-name>
+      <param-value>true</param-value>
     </init-param>
   </filter>
   <filter-mapping>
-    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-name>encodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <!-- spring的配置文件-->
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>
-      <!--用于链接数据库-->
-      classpath:applicationContext.xml,
-      <!--用于配置shiro，加载shiro配置文件，并获取工厂、获取安全管理者实例、将安全管理者放入全局对象-->
-      classpath:applicationContext-shiro.xml
-    </param-value>
-  </context-param>
-  <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
-
-  <!-- spring mvc核心：分发servlet -->
-  <servlet>
-    <servlet-name>mvc-dispatcher</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <!-- 指定spring mvc的配置文件 -->
-    <init-param>
-      <param-name>contextConfigLocation</param-name>
-      <param-value>classpath:springMVC.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>mvc-dispatcher</servlet-name>
-    <url-pattern>/</url-pattern>
-  </servlet-mapping>
-
+  <!-- Apache Shiro，使用shiro过滤器 -->
   <!-- Shiro配置，一旦完成配置，Shiro Filter 就会过滤每个请求并且确保在请求期间特定请求的 Subject 是可访问的。 -->
-  <!--使用shiro过滤器-->
   <filter>
     <filter-name>shiroFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -63,4 +54,138 @@
     <filter-name>shiroFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+
+  <!-- SiteMesh -->
+  <filter>
+    <filter-name>sitemeshFilter</filter-name>
+    <filter-class>com.opensymphony.sitemesh.webapp.SiteMeshFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>sitemeshFilter</filter-name>
+    <url-pattern>/a/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>sitemeshFilter</filter-name>
+    <url-pattern>/f/*</url-pattern>
+  </filter-mapping>
+
+  <!-- spring mvc核心：分发servlet -->
+  <servlet>
+    <servlet-name>springServlet</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <!-- 指定spring mvc的配置文件 -->
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath*:/spring-mvc*.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>springServlet</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+  <!-- DruidStatView -->
+  <servlet>
+    <servlet-name>DruidStatView</servlet-name>
+    <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+    <init-param>
+      <param-name>allow</param-name>
+      <param-value>127.0.0.1</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DruidStatView</servlet-name>
+    <url-pattern>/druid/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- CKFinder -->
+  <servlet>
+    <servlet-name>CKFinderConnectorServlet</servlet-name>
+    <servlet-class>com.thinkgem.jeesite.common.web.CKFinderConnectorServlet</servlet-class>
+    <init-param>
+      <param-name>XMLConfig</param-name>
+      <param-value>/WEB-INF/ckfinder.xml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>configuration</param-name>
+      <param-value>com.thinkgem.jeesite.common.web.CKFinderConfig</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CKFinderConnectorServlet</servlet-name>
+    <url-pattern>/static/ckfinder/core/connector/java/connector.java</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <filter-name>FileUploadFilter</filter-name>
+    <filter-class>com.ckfinder.connector.FileUploadFilter</filter-class>
+    <init-param>
+      <param-name>sessionCookieName</param-name>
+      <param-value>JSESSIONID</param-value>
+    </init-param>
+    <init-param>
+      <param-name>sessionParameterName</param-name>
+      <param-value>jsessionid</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>FileUploadFilter</filter-name>
+    <url-pattern>/static/ckfinder/core/connector/java/connector.java</url-pattern>
+  </filter-mapping>
+
+  <!-- Userfiles download -->
+  <servlet>
+    <servlet-name>UserfilesDownloadServlet</servlet-name>
+    <servlet-class>com.thinkgem.jeesite.common.servlet.UserfilesDownloadServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UserfilesDownloadServlet</servlet-name>
+    <url-pattern>/userfiles/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- Validate code -->
+  <servlet>
+    <servlet-name>ValidateCodeServlet</servlet-name>
+    <servlet-class>com.thinkgem.jeesite.common.servlet.ValidateCodeServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ValidateCodeServlet</servlet-name>
+    <url-pattern>/servlet/validateCodeServlet</url-pattern>
+  </servlet-mapping>
+
+  <!-- FineReport
+  <servlet>
+    <servlet-name>ReportServer</servlet-name>
+    <servlet-class>com.fr.web.ReportServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ReportServer</servlet-name>
+    <url-pattern>/ReportServer</url-pattern>
+  </servlet-mapping>-->
+
+  <!-- [INSERT FRAGMENT HERE] -->
+
+  <!-- Session configure, to "jeesite.properties" file "session.sessionTimeout" parameter.
+  <session-config>
+    <session-timeout>30</session-timeout>
+  </session-config>-->
+
+  <!-- Error page -->
+  <!-- <error-page>
+    <exception-type>java.lang.Throwable</exception-type>
+    <location>/WEB-INF/views/error/500.jsp</location>
+  </error-page> -->
+  <error-page>
+    <error-code>500</error-code>
+    <location>/WEB-INF/views/error/500.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/WEB-INF/views/error/404.jsp</location>
+  </error-page>
 </web-app>

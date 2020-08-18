@@ -69,6 +69,8 @@
     <jdk.version>1.7</jdk.version>
     <tomcat.version>2.2</tomcat.version>
     <webserver.port>8181</webserver.port>
+
+    <ant.version>1.10.7</ant.version>
   </properties>
 
   <!--该元素描述了项目相关的所有依赖。 这些依赖组成了项目构建过程中的一个个环节。它们自动从项目定义的仓库中下载。-->
@@ -534,6 +536,36 @@
       <artifactId>javase</artifactId>
       <version>2.2</version>
     </dependency>
+    <!-- GENERAL UTILS end -->
+
+    <!-- CKFinder begin -->
+    <dependency>
+      <groupId>net.coobird</groupId>
+      <artifactId>thumbnailator</artifactId>
+      <version>0.4.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ckfinder</groupId>
+      <artifactId>ckfinder</artifactId>
+      <version>2.3</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/ckfinder-2.3.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.ckfinder</groupId>
+      <artifactId>ckfinderplugin-fileeditor</artifactId>
+      <version>2.3</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/ckfinderplugin-fileeditor-2.3.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.ckfinder</groupId>
+      <artifactId>ckfinderplugin-imageresize</artifactId>
+      <version>2.3</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/ckfinderplugin-imageresize-2.3.jar</systemPath>
+    </dependency>
+    <!-- CKFinder end -->
 
     <!-- TEST begin -->
     <!--default-->
@@ -549,6 +581,13 @@
       <version>${spring.version}</version>
     </dependency>
     <!-- TEST end -->
+
+    <!-- User Agent -->
+    <dependency>
+      <groupId>eu.bitwalker</groupId>
+      <artifactId>UserAgentUtils</artifactId>
+      <version>1.21</version>
+    </dependency>
 
     <!--other-->
     <!-- pageHelper -->
@@ -572,6 +611,13 @@
       <groupId>org.mybatis.generator</groupId>
       <artifactId>mybatis-generator-core</artifactId>
       <version>${mybatis-generator.version}</version>
+    </dependency>
+
+    <!-- Apache Tools Ant Tar Zip  -->
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>${ant.version}</version>
     </dependency>
   </dependencies>
 
